@@ -3,6 +3,7 @@ package pinyin
 import (
 	"bufio"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -30,7 +31,7 @@ var (
 
 	initialized bool
 
-	path = "pinyin.txt"
+	datafile = "pinyin.txt"
 )
 
 type Mode int
@@ -58,10 +59,27 @@ func init() {
 		}
 	}
 
-	f, err := os.Open(path)
+	gopath := os.Getenv("GOPATH")
+	if gopath == ""{
+		initialized = false
+		return
+	}
+
+	dataPath := path.Join(gopath, "src", "github.com/Chain-Zhang/pinyin", datafile)
+	if !checkDir(dataPath) {
+		dataPath := path.Join(gopath, "pgk/mod", "github.com/Chain-Zhang/pinyin", datafile)
+		if !checkDir(dataPath){
+			initialized = false
+			return
+		}
+	}
+
+
+	f, err := os.Open(dataPath)
 	defer f.Close()
 	if err != nil {
 		initialized = false
+		return
 	}
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -76,6 +94,15 @@ func init() {
 		pinyinMap[rune(i)] = strs[1]
 	}
 	initialized = true
+}
+
+// 检查文件是否存在
+func checkDir(file string) bool {
+	_, err := os.Stat(file)
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func New(origin string) *pinyin {
@@ -96,19 +123,23 @@ func (py *pinyin)Mode (mode Mode) *pinyin  {
 	return py
 }
 
-func (py *pinyin)Convert() string {
+func (py *pinyin)Convert() (string, error) {
+	if !initialized {
+		return "", ErrInitialize
+	}
+
 	sr := []rune(py.origin)
 	words := make([]string, 0)
 	for _, s := range sr{
 		word, err := getPinyin(s, py.mode)
 		if err != nil {
-			return err.Error()
+			return "", err
 		}
 		if len(word) > 0{
 			words = append(words, word)
 		}
 	}
-	return strings.Join(words, py.split)
+	return strings.Join(words, py.split), nil
 }
 
 func getPinyin(hanzi rune, mode Mode) (string, error) {
