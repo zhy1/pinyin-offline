@@ -10,3 +10,17 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# For Mac OS
+*~
+.DS_Store
+
+# For auto build
+bin/
+pkg/
+build/
+_publish_dir
+
+# For temp
+temp/
+tmp/
