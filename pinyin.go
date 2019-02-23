@@ -2,6 +2,7 @@ package pinyin
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path"
 	"strconv"
@@ -61,14 +62,17 @@ func init() {
 
 	gopath := os.Getenv("GOPATH")
 	if gopath == ""{
+		fmt.Println("gopath empty")
 		initialized = false
 		return
 	}
 
 	dataPath := path.Join(gopath, "src", "github.com/Chain-Zhang/pinyin", datafile)
 	if !checkDir(dataPath) {
+		fmt.Println(dataPath)
 		dataPath := path.Join(gopath, "pgk/mod", "github.com/Chain-Zhang/pinyin", datafile)
 		if !checkDir(dataPath){
+			fmt.Println(dataPath)
 			initialized = false
 			return
 		}
