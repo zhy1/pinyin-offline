@@ -2,9 +2,8 @@ package pinyin
 
 import (
 	"bufio"
-	"fmt"
-	"os"
-	"path"
+	"io"
+	"net/http"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -31,8 +30,6 @@ var (
 	pinyinMap map[rune]string
 
 	initialized bool
-
-	datafile = "pinyin.txt"
 )
 
 type Mode int
@@ -60,26 +57,7 @@ func init() {
 		}
 	}
 
-	gopath := os.Getenv("GOPATH")
-	if gopath == ""{
-		fmt.Println("gopath empty")
-		initialized = false
-		return
-	}
-
-	dataPath := path.Join(gopath, "src", "github.com/Chain-Zhang/pinyin", datafile)
-	if !checkDir(dataPath) {
-		fmt.Println(dataPath)
-		dataPath := path.Join(gopath, "pgk/mod", "github.com/Chain-Zhang/pinyin", datafile)
-		if !checkDir(dataPath){
-			fmt.Println(dataPath)
-			initialized = false
-			return
-		}
-	}
-
-
-	f, err := os.Open(dataPath)
+	f, err := getFileContent()
 	defer f.Close()
 	if err != nil {
 		initialized = false
@@ -100,13 +78,9 @@ func init() {
 	initialized = true
 }
 
-// 检查文件是否存在
-func checkDir(file string) bool {
-	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+func getFileContent()(io.ReadCloser, error){
+	resp, err := http.Get("https://raw.githubusercontent.com/chain-zhang/pinyin/master/pinyin.txt")
+    return resp.Body, err
 }
 
 func New(origin string) *pinyin {
