@@ -21,7 +21,7 @@ import(
 )
 
 func main()  {
-    str, err := pinyin.New("我是中国人").Split("").Mode(InitialsInCapitals).Convert()
+    str, err := pinyin.New("我是中国人").Split("").Mode(pinyin.InitialsInCapitals).Convert()
 	if err != nil {
 		// 错误处理
 	}else{
