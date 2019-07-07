@@ -1,5 +1,11 @@
 # pinyin
 
+
+优化：
+不再需要外网读取utf8-pinyin的资源包
+
+
+
 [![Build Status](https://travis-ci.com/Chain-Zhang/pinyin.svg?branch=master)](https://travis-ci.com/Chain-Zhang/pinyin)
 [![codecov](https://codecov.io/gh/Chain-Zhang/pinyin/branch/master/graph/badge.svg)](https://codecov.io/gh/Chain-Zhang/pinyin)
 
